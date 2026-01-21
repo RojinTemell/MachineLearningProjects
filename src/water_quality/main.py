@@ -54,11 +54,32 @@ plt.tight_layout()
 # plt.show()
 # missing value
 msno.matrix(df)
-plt.show()
+# plt.show()
 
 
 
 # Preprocessing: missing value problem, train-test split, normalization
+
+
+df["ph"] = df["ph"].fillna(df.groupby("Potability")["ph"].transform("mean"))
+df["Sulfate"]=df["Sulfate"].fillna(df.groupby("Potability")["Sulfate"].transform("mean"))
+df["Trihalomethanes"]=df["Trihalomethanes"].fillna(df.groupby("Potability")["Trihalomethanes"].transform("mean"))
+print(df.isnull().sum())
+
+#train-test split
+
+#independent değerler
+X=df.drop('Potability',axis=1).values
+
+#target değerler; potable or non-potable
+y=df['Potability'].values
+
+X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.3,random_state=42)
+#min-max normalization
+x_train_max=np.max(X_train)
+x_train_min=np.min(X_train)
+X_train=(X_train - x_train_min)/(x_train_max-x_train_min)
+X_test=(X_test - x_train_min)/(x_train_max-x_train_min)
 
 
 
