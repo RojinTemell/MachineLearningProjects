@@ -55,7 +55,7 @@ fig.update_layout(title=dict(text="Pie Chart of Potability Feature"))
 # fig.show()
 fig.write_html("potability_pie_chart.html")
 
-# korelasyon analizi ; features arasında çok korelasyon varssa tüm feature lara ihtiyaç yoktur
+# korelasyon analizi ; features arasında çok korelasyon varsa tüm feature lara ihtiyaç yoktur
 sns.clustermap(df.corr(),cmap="vlag",dendrogram_ratio=(0.1,0.2),annot=True,linewidths=0.8,figsize=(10,10))
 # plt.show()
 
@@ -77,7 +77,7 @@ plt.tight_layout()#subplotların ototmatik çakışmadan yerlerşmelerini sağla
 
 # missing value
 msno.matrix(df)
-plt.show()
+# plt.show()
 
 
 
@@ -134,8 +134,34 @@ for name, i in cmList:
     plt.title(name)
     plt.show()
 
+# Evaluation:decision tree visualization
+dt_clf=model_result[0][1]
+plt.figure(figsize=(25,20))
+tree.plot_tree(dt_clf,feature_names=df.columns.tolist()[:1],
+               class_names=["0","1"],
+               filled=True,
+               precision=3
+               )
+plt.show(),
 
-# # Evaluation:decision tree visualization
+# Hpyerparameter tuning:random forest
+model_params={
+    "Random Forest":
+    {
+        "model":RandomForestClassifier(),
+        "params":{
+            "n_estimators":[10,50,100],
+            "max_features":["auto","sqrt","log2"],
+            "max_depth":list(range(1,21,3))
 
-
-# # Hpyerparameter tuning:random forest
+        }
+    }
+}
+cv=RepeatedStratifiedKFold(n_splits=5,n_repeats=2)
+scores=[]
+for model_name,params in model_params.items():
+    rs=RandomizedSearchCV(params["model"],params["params"],cv=cv,n_iter=10)
+    rs.fit(X,y)
+    scores.append([model_name,dict(rs.best_params_,),rs.best_score_])
+    
+print(scores)
