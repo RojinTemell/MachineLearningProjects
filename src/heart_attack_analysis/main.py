@@ -1,10 +1,11 @@
 import pandas as pd 
 import numpy as np
 import matplotlib.pyplot as plt 
+import seaborn as sns
 
 #Load dataset and basic eda
 df=pd.read_csv("/Users/apple/Desktop/python_projects/src/heart_attack_analysis/heart.csv")
-describe=df.describe()
+# describe=df.describe()
 # # print(describe)
 # df.info()
 #  #   Column    Non-Null Count  Dtype  
@@ -42,3 +43,18 @@ print(df.isnull().sum())
 # thall       0
 # output      0
 # dtype: int64
+
+
+# categorical and numerical feature analysis
+categorical_list=["sex" ,"cp","fbs","restecg","exng","slp","caa","thall","output"]
+df_categorical=df.loc[:,categorical_list] 
+for i in categorical_list:
+    plt.figure()
+    sns.countplot(x=i,data=df_categorical,hue = "output")
+    plt.title(i)
+# plt.show()
+
+numerical_list=["age","trtbps","chol","thalachh","oldpeak","output"]
+df_numerical=df.loc[:,numerical_list]
+sns.pairplot(df_numerical,hue = "output",diag_kind="kde")
+# plt.show()
