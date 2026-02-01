@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt 
 import seaborn as sns
+from sklearn.preprocessing import StandardScaler
 
 #Load dataset and basic eda
 df=pd.read_csv("/Users/apple/Desktop/python_projects/src/heart_attack_analysis/heart.csv")
@@ -48,13 +49,44 @@ print(df.isnull().sum())
 # categorical and numerical feature analysis
 categorical_list=["sex" ,"cp","fbs","restecg","exng","slp","caa","thall","output"]
 df_categorical=df.loc[:,categorical_list] 
-for i in categorical_list:
-    plt.figure()
-    sns.countplot(x=i,data=df_categorical,hue = "output")
-    plt.title(i)
+# for i in categorical_list:
+#     plt.figure()
+#     sns.countplot(x=i,data=df_categorical,hue = "output")
+#     plt.title(i)
 # plt.show()
 
 numerical_list=["age","trtbps","chol","thalachh","oldpeak","output"]
 df_numerical=df.loc[:,numerical_list]
-sns.pairplot(df_numerical,hue = "output",diag_kind="kde")
+# sns.pairplot(df_numerical,hue = "output",diag_kind="kde")
 # plt.show()
+
+#EDA:box, swarm ,cat,correlation analysis
+
+scaler=StandardScaler()
+scaled_array=scaler.fit_transform(df[numerical_list[:-1]])
+
+df_dummy=pd.DataFrame(scaled_array,columns=numerical_list[:-1])
+df_dummy=pd.concat([df_dummy,df.loc[:,"output"]],axis=1)
+
+#box plot 
+
+data_melted=pd.melt(df_dummy,id_vars="output",var_name="features",value_name="value")
+# plt.figure()
+# sns.boxplot(x="features",y="value",hue="output",data=data_melted)
+# plt.show()
+
+#sworm plot
+# plt.figure()
+# sns.swarmplot(x="features",y="value",hue="output",data=data_melted)
+# plt.show()
+
+#cat plot
+# plt.figure()
+# # sns.catplot(x="chol",y="sex", col="age"  ,kind="swarm",hue="output",data=df)
+# plt.show()
+
+#correlation
+plt.figure()
+sns.heatmap(df.corr(),annot=True,fmt=".1f",linewidths=0.7)
+plt.show()
+
