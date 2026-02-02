@@ -88,5 +88,28 @@ data_melted=pd.melt(df_dummy,id_vars="output",var_name="features",value_name="va
 #correlation
 plt.figure()
 sns.heatmap(df.corr(),annot=True,fmt=".1f",linewidths=0.7)
-plt.show()
+# plt.show()
+
+
+# outlier detection
+
+for i in numerical_list:
+    Q1=np.percentile(df.loc[:,i],25)
+    Q3=np.percentile(df.loc[:,i],75)
+
+    IQR=Q3 -Q1
+    print(f" {i}old shape :{df.loc[:,i].shape}")
+    upper=np.where(df.loc[:,i]>=(Q3+2.5*IQR))
+    lower=np.where(df.loc[:,i]<=(Q1-2.5*IQR))
+
+    try:
+        df.drop(upper[0],inplace=True)
+    except: print("hata")
+
+    try:
+        df.drop(lower[0],inplace=True)
+    except: print("hata")
+
+    print(f"New shape :{df.shape}")
+
 
